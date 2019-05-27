@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <title>= Доступ к youTube-ролику =</title>
+
+  <style>
+    html {
+      background-color: #f3f3f3;
+    }
+    .wrapper {
+      max-width: 680px;
+      margin: 60px auto;
+      padding: 0 20px;
+    }
+
+    .youtube {
+      background-color: #000;
+      margin-bottom: 30px;
+      position: relative;
+      padding-top: 56.25%;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .youtube img {
+      width: 100%;
+      top: -16.82%;
+      left: 0;
+      opacity: 0.7;
+    }
+    .youtube .play-button {
+      width: 90px;
+      height: 60px;
+      background-color: #333;
+      box-shadow: 0 0 30px rgba( 0,0,0,0.6 );
+      z-index: 1;
+      opacity: 0.8;
+      border-radius: 6px;
+    }
+    .youtube .play-button:before {
+      content: "";
+      border-style: solid;
+      border-width: 15px 0 15px 26.0px;
+      border-color: transparent transparent transparent #fff;
+    }
+    .youtube img,
+    .youtube .play-button {
+      cursor: pointer;
+    }
+    .youtube img,
+    .youtube iframe,
+    .youtube .play-button,
+    .youtube .play-button:before {
+      position: absolute;
+    }
+    .youtube .play-button,
+    .youtube .play-button:before {
+      top: 50%;
+      left: 50%;
+      transform: translate3d( -50%, -50%, 0 );
+    }
+    .youtube iframe {
+      height: 100%;
+      width: 100%;
+      top: 0;
+      left: 0;
+    }
+  </style>
+</head>
+
+<body>
+<div>
+  GOOOOO
+</div>
+
+<div class="wrapper">
+  <div class="youtube" data-embed="AqcjdkPMPJA">
+    <div class="play-button"></div>
+  </div>
+</div>
+
+<script>
+  ( function() {
+
+    var youtube = document.querySelectorAll( ".youtube" )  // он далее будет в роли родителя, с псевдонимом this, т.к. последующий код опуститься внутрь функции "for (var i = 0; i < youtube.length; i++) {}"
+    console.log('=document.querySelectorAll( ".youtube" )=', youtube)
+
+    for (var i = 0; i < youtube.length; i++) {  //  youtube.length = 1, проверка на доступность youtube-ресурса
+
+      // part-1
+      var source = "https://img.youtube.com/vi/"+ youtube[i].dataset.embed +"/sddefault.jpg" // "/sddefault.jpg" - картинка перед показом
+      // var source = "https://img.youtube.com/vi/AqcjdkPMPJA/sddefault.jpg   - URL картинки перед показом
+
+      var image = new Image();  // Это функционально эквивалентно document.createElement('img')
+      image.src = source;
+      image.addEventListener( "load", function() {    // load - когда вся страница загружается, включая все зависимые ресурсы
+        youtube[ i ].appendChild( image );
+      }( i ) )   // i = 1, обработчик вешаем на ютубовскую картинку!
+
+
+      // part-2
+      youtube[i].addEventListener( "click", function() {   // обработчик на див, в который мы инстиллируем ютубовский видео-фрейм
+        var iframe = document.createElement( "iframe" );   // создаем виртуальный <iframe>, он еще вне html-кода
+
+        iframe.setAttribute( "frameborder", "0" );
+        iframe.setAttribute( "allowfullscreen", "" );
+        iframe.setAttribute( "src", "https://www.youtube.com/embed/"+ this.dataset.embed +"?rel=0&showinfo=0&autoplay=1" );
+
+        this.innerHTML = ""  // очищаем родителя от дочек, т.е. от <img>. Заставка-картинка удаляется.
+        this.appendChild( iframe )   // вместо заставки-картинки вставляем в родителя другую дочку- <iframe>.
+
+        console.log('=this=', this)
+        // this - это блок html-кода:
+        // <div class="youtube" data-embed="AqcjdkPMPJA">
+        //   <iframe frameborder="0" allowfullscreen="" src="https://www.youtube.com/embed/AqcjdkPMPJA?rel=0&amp;showinfo=0&amp;autoplay=1">
+        //   </iframe>
+        // </div>
+
+
+        // Первый клик генерирует youtube <iframe> и вставляет его в код html,
+        // заставка-картинка сменяется на такого же вида заставку - первый кадр ролика,
+        // а второй клик запускает ролик.
+
+        // Т.е.
+        // для прикручивания click к youtube<iframe> используем не его родной <iframe> (к которому не получиться прикрутить click),
+        // а ГЕНЕРИРУЕМ <iframe> для youtube-ролика by click`ом по родителю,
+        // А пока мы его не сгенерировали на месте youtube <iframe> будет просто картиночка, которую получаем из ресурса ролика.
+
+      } )
+    }
+
+  } )()
+</script>
+</body>
+</html>
