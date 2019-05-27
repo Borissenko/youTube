@@ -5,6 +5,8 @@
 
   <title>= Доступ к youTube-ролику =</title>
 
+<!--  для play/stop -see to https://developers.google.com/youtube/iframe_api_reference-->
+
   <style>
     html {
       background-color: #f3f3f3;
@@ -76,12 +78,16 @@
 
 <div class="wrapper">
   <div class="youtube" data-embed="AqcjdkPMPJA">
+<!--    <div class="youtube intro__player"> для при наличии ReEx-->
     <div class="play-button"></div>
   </div>
 </div>
 
 <script>
   ( function() {
+    var urliframe='<?= $this->videoData->video_full ?>'
+    let nameRegex_0 = /embed\/(.*?)\?/
+    const resoursVideo_0 = urliframe.match(nameRegex_0)
 
     var youtube = document.querySelectorAll( ".youtube" )  // он далее будет в роли родителя, с псевдонимом this, т.к. последующий код опуститься внутрь функции "for (var i = 0; i < youtube.length; i++) {}"
     console.log('=document.querySelectorAll( ".youtube" )=', youtube)
@@ -89,8 +95,12 @@
     for (var i = 0; i < youtube.length; i++) {  //  youtube.length = 1, проверка на доступность youtube-ресурса
 
       // part-1
-      var source = "https://img.youtube.com/vi/"+ youtube[i].dataset.embed +"/sddefault.jpg" // "/sddefault.jpg" - картинка перед показом
-      // var source = "https://img.youtube.com/vi/AqcjdkPMPJA/sddefault.jpg   - URL картинки перед показом
+      // var source = "https://img.youtube.com/vi/"+ resoursVideo_0[1] +"/maxresdefault.jpg" //  для при наличии ReEx
+
+      var source = "https://img.youtube.com/vi/"+ youtube[i].dataset.embed +"/sddefault.jpg" // "/sddefault.jpg" - картинка перед показом (разновидности - см http://shpargalkablog.ru/2013/06/youtube.html)
+      // var source = "https://img.youtube.com/vi/AqcjdkPMPJA/sddefault.jpg   - URL картинки перед показом.
+      // source = "https://img.youtube.com/vi/"+ youtube[i].dataset.embed +"/sddefault.jpg" - прописываем в подобном виде,
+      // даже если в адресе youTube-ролика приписки /sddefault.jpg - нет (https://youtu.be/hRt5AIsoULs).
 
       var image = new Image();  // Это функционально эквивалентно document.createElement('img')
       image.src = source;
@@ -106,6 +116,8 @@
         iframe.setAttribute( "frameborder", "0" );
         iframe.setAttribute( "allowfullscreen", "" );
         iframe.setAttribute( "src", "https://www.youtube.com/embed/"+ this.dataset.embed +"?rel=0&showinfo=0&autoplay=1" );
+        // this.dataset.embed поступает из атрибутов <div class="youtube" data-embed="AqcjdkPMPJA">, описанного выше
+        // iframe.setAttribute( "src", "https://www.youtube.com/embed/"+ resoursVideo_0[1] +"?title=0&byline=0&portrait=0&badge=0" )  //  -для при наличии ReEx
 
         this.innerHTML = ""  // очищаем родителя от дочек, т.е. от <img>. Заставка-картинка удаляется.
         this.appendChild( iframe )   // вместо заставки-картинки вставляем в родителя другую дочку- <iframe>.
@@ -113,7 +125,7 @@
         console.log('=this=', this)
         // this - это блок html-кода:
         // <div class="youtube" data-embed="AqcjdkPMPJA">
-        //   <iframe frameborder="0" allowfullscreen="" src="https://www.youtube.com/embed/AqcjdkPMPJA?rel=0&amp;showinfo=0&amp;autoplay=1">
+        //   <iframe frameborder="0" allowfullscreen="" src="https://www.youtube.com/embed/AqcjdkPMPJA?rel=0&amp;showinfo=0&amp;autoplay=1&amp">
         //   </iframe>
         // </div>
 
